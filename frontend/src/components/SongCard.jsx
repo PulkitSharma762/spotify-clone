@@ -1,9 +1,12 @@
 import {
   FaPause,
   FaPlay,
+  FaHeart,
+  FaRegHeart,
 } from "react-icons/fa";
 
 import { usePlayer } from "../context/PlayerContext";
+import { useAuth } from "../context/AuthContext";
 
 const SongCard = ({ song, songs = [] }) => {
   const {
@@ -12,6 +15,11 @@ const SongCard = ({ song, songs = [] }) => {
     playSong,
     togglePlay,
   } = usePlayer();
+
+  const {
+    isFavourite,
+    toggleFavouriteSong,
+  } = useAuth();
 
   const isCurrentSong =
     currentSong?._id === song?._id;
@@ -27,6 +35,11 @@ const SongCard = ({ song, songs = [] }) => {
     }
 
     playSong(song, songs);
+  };
+
+  const handleFavourite = (e) => {
+    e.stopPropagation();
+    toggleFavouriteSong(song);
   };
 
   return (
@@ -91,6 +104,25 @@ const SongCard = ({ song, songs = [] }) => {
         </p>
       </button>
 
+      {/* Favourite Button */}
+      <button
+        type="button"
+        onClick={handleFavourite}
+        aria-label={
+          isFavourite(song._id)
+            ? "Remove from favourites"
+            : "Add to favourites"
+        }
+        className="hidden md:flex w-9 h-9 items-center justify-center rounded-full text-zinc-400 hover:text-green-500 transition"
+      >
+        {isFavourite(song._id) ? (
+          <FaHeart className="text-green-500" />
+        ) : (
+          <FaRegHeart />
+        )}
+      </button>
+
+      {/* Mobile Play Button */}
       <button
         type="button"
         onClick={handlePlay}

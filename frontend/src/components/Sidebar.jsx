@@ -1,5 +1,6 @@
 import {
   FaCompactDisc,
+  FaHeart,
   FaHome,
   FaSearch,
   FaTools,
@@ -44,6 +45,11 @@ const Sidebar = () => {
           <span>Search</span>
         </NavLink>
 
+        <NavLink to="/liked" className={navClass}>
+          <FaHeart className="text-xl text-green-500" />
+          <span>Liked Songs</span>
+        </NavLink>
+
         {user?.role === "artist" && (
           <NavLink to="/admin" className={navClass}>
             <FaTools className="text-xl" />
@@ -62,6 +68,17 @@ const Sidebar = () => {
           Browse your music collection, albums and
           artists.
         </p>
+
+        <div className="mt-6 border-t border-zinc-800 pt-5">
+          <p className="text-xs uppercase tracking-widest font-bold text-green-500">
+            Liked Songs
+          </p>
+
+          <p className="text-xs leading-5 text-zinc-500 mt-2">
+            All the songs you've marked as favourites
+            will appear here.
+          </p>
+        </div>
 
         {user?.role === "artist" && (
           <div className="mt-6 border-t border-zinc-800 pt-5">

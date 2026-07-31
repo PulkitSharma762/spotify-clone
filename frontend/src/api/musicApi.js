@@ -19,3 +19,13 @@ export const uploadSong = (formData) => {
 export const createAlbum = (formData) => {
   return api.post("/music/album", formData);
 };
+
+/* ---------- FAVOURITES ---------- */
+
+export const toggleFavourite = (songId) => {
+  return api.patch(`/auth/favourites/${songId}`);
+};
+
+export const getFavouriteSongs = () => {
+  return api.get("/auth/favourites");
+};

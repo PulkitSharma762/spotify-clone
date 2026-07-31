@@ -12,6 +12,7 @@ import MainLayout from "./layouts/MainLayout";
 import Admin from "./pages/Admin";
 import Album from "./pages/Album";
 import Home from "./pages/Home";
+import LikedSongs from "./pages/LikedSongs";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Search from "./pages/Search";
@@ -33,6 +34,10 @@ function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/search" element={<Search />} />
             <Route path="/album/:id" element={<Album />} />
+            <Route
+              path="/liked"
+              element={<LikedSongs />}
+            />
 
             <Route element={<ArtistRoute />}>
               <Route path="/admin" element={<Admin />} />

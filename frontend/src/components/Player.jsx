@@ -6,9 +6,12 @@ import {
   FaVolumeDown,
   FaVolumeMute,
   FaVolumeUp,
+  FaHeart,
+  FaRegHeart,
 } from "react-icons/fa";
 
 import { usePlayer } from "../context/PlayerContext";
+import { useAuth } from "../context/AuthContext";
 
 const formatTime = (seconds) => {
   if (!Number.isFinite(seconds) || seconds < 0) {
@@ -40,12 +43,17 @@ const Player = () => {
     changeVolume,
   } = usePlayer();
 
+  const {
+    isFavourite,
+    toggleFavouriteSong,
+  } = useAuth();
+
   const VolumeIcon =
     volume === 0
       ? FaVolumeMute
       : volume < 0.5
-        ? FaVolumeDown
-        : FaVolumeUp;
+      ? FaVolumeDown
+      : FaVolumeUp;
 
   const initial =
     currentSong?.title
@@ -70,22 +78,45 @@ const Player = () => {
           )}
         </div>
 
-        <div className="min-w-0">
-          <p
-            className={`text-sm font-medium truncate ${
-              currentSong
-                ? "text-white"
-                : "text-zinc-400"
-            }`}
-          >
-            {currentSong?.title ||
-              "Choose a song"}
-          </p>
+        <div className="min-w-0 flex items-center gap-3">
+          <div className="min-w-0">
+            <p
+              className={`text-sm font-medium truncate ${
+                currentSong
+                  ? "text-white"
+                  : "text-zinc-400"
+              }`}
+            >
+              {currentSong?.title ||
+                "Choose a song"}
+            </p>
 
-          <p className="text-xs text-zinc-500 truncate mt-0.5">
-            {currentSong?.artist ||
-              "Nothing playing"}
-          </p>
+            <p className="text-xs text-zinc-500 truncate mt-0.5">
+              {currentSong?.artist ||
+                "Nothing playing"}
+            </p>
+          </div>
+
+          {currentSong && (
+            <button
+              type="button"
+              onClick={() =>
+                toggleFavouriteSong(currentSong)
+              }
+              aria-label={
+                isFavourite(currentSong._id)
+                  ? "Remove from favourites"
+                  : "Add to favourites"
+              }
+              className="text-lg transition hover:scale-110"
+            >
+              {isFavourite(currentSong._id) ? (
+                <FaHeart className="text-green-500" />
+              ) : (
+                <FaRegHeart className="text-zinc-400 hover:text-green-500" />
+              )}
+            </button>
+          )}
         </div>
       </div>
 

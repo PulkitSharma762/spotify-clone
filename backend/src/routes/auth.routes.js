@@ -15,4 +15,16 @@ router.get(
   authController.getCurrentUser
 );
 
+router.patch(
+  "/favourites/:songId",
+  authMiddleware.authUser,
+  authController.toggleFavourite
+);
+
+router.get(
+  "/favourites",
+  authMiddleware.authUser,
+  authController.getFavouriteSongs
+);
+
 module.exports = router;

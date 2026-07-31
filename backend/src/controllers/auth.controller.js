@@ -32,6 +32,7 @@ function formatUser(user) {
     username: user.username,
     email: user.email,
     role: user.role,
+    favourites: user.favourites || [],
   };
 }
 
@@ -91,8 +92,9 @@ async function registerUser(req, res, next) {
       email,
       password: hashedPassword,
       role: "user",
+      favourites: [],
     });
-
+    await user.populate("favourites"); 
     const token = createToken(user);
 
     res.cookie(COOKIE_NAME, token, getCookieOptions());
@@ -142,7 +144,7 @@ async function loginUser(req, res, next) {
         message: "Invalid email/username or password",
       });
     }
-
+    await user.populate("favourites");
     const token = createToken(user);
 
     res.cookie(COOKIE_NAME, token, getCookieOptions());
@@ -170,7 +172,9 @@ async function logoutUser(req, res) {
 
 async function getCurrentUser(req, res, next) {
   try {
-    const user = await userModel.findById(req.user.id);
+    const user = await userModel
+      .findById(req.user.id)
+      .populate("favourites");
 
     if (!user) {
       return res.status(404).json({
@@ -186,9 +190,69 @@ async function getCurrentUser(req, res, next) {
   }
 }
 
+async function toggleFavourite(req, res, next) {
+  try {
+    const { songId } = req.params;
+
+    const user = await userModel.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const alreadyLiked = user.favourites.some(
+      (id) => id.toString() === songId
+    );
+
+    if (alreadyLiked) {
+      user.favourites.pull(songId);
+    } else {
+      user.favourites.push(songId);
+    }
+
+    await user.save();
+
+    await user.populate("favourites");
+
+    return res.status(200).json({
+      message: alreadyLiked
+        ? "Removed from favourites"
+        : "Added to favourites",
+      favourites: user.favourites,
+      liked: !alreadyLiked,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getFavouriteSongs(req, res, next) {
+  try {
+    const user = await userModel
+      .findById(req.user.id)
+      .populate("favourites");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      favourites: user.favourites,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
   logoutUser,
   getCurrentUser,
+  toggleFavourite,
+  getFavouriteSongs,
 };

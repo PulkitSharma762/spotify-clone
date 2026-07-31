@@ -12,6 +12,8 @@ import {
   getCurrentUser,
 } from "../api/authApi";
 
+import { toggleFavourite } from "../api/musicApi";
+
 const AuthContext = createContext(null);
 
 export const useAuth = () => {
@@ -32,7 +34,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await getCurrentUser();
       setUser(response.data.user);
-    } catch {
+    } catch (err) {
       setUser(null);
     } finally {
       setLoading(false);
@@ -44,17 +46,13 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (credentials) => {
-    const response = await loginApi(credentials);
-    setUser(response.data.user);
-
-    return response;
+    await loginApi(credentials);
+    await loadUser();
   };
 
   const register = async (userData) => {
-    const response = await registerApi(userData);
-    setUser(response.data.user);
-
-    return response;
+    await registerApi(userData);
+    await loadUser();
   };
 
   const logout = async () => {
@@ -62,6 +60,32 @@ export const AuthProvider = ({ children }) => {
       await logoutApi();
     } finally {
       setUser(null);
+    }
+  };
+
+  const isFavourite = (songId) => {
+    if (!user?.favourites) return false;
+
+    return user.favourites.some(
+      (song) => song._id === songId || song === songId
+    );
+  };
+
+  const toggleFavouriteSong = async (song) => {
+    if (!user) return;
+
+    const songId =
+      typeof song === "string" ? song : song._id;
+
+    try {
+      const response = await toggleFavourite(songId);
+
+      setUser((prev) => ({
+        ...prev,
+        favourites: response.data.favourites,
+      }));
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -74,9 +98,13 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         loadUser,
+        isFavourite,
+        toggleFavouriteSong,
       }}
     >
       {children}
     </AuthContext.Provider>
   );
 };
+
+export default AuthContext;
