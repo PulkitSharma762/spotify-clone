@@ -46,6 +46,8 @@ The application allows users to browse music, search for songs, play audio using
 - 👤 User-specific interface
 - 📱 Responsive Spotify-inspired dark UI
 - ⚡ Dynamic frontend connected to a REST API
+- ❤️ Like and unlike songs
+- 💚 View all favourite songs in a dedicated Liked Songs page
 
 ---
 
